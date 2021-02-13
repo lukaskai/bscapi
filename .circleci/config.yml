@@ -1,0 +1,129 @@
+version: 2.1
+
+# SNIPPETS
+
+defaults: &defaults
+  working_directory: ~/bscapi-pipeline
+
+docker_defaults: &docker_defaults
+  docker:
+    - image: circleci/node:12
+
+attach_workspace: &attach_workspace
+  attach_workspace:
+    at: ~/bscapi-pipeline
+
+# COMMANDS
+
+commands:
+  with_npm_cache_span:
+    parameters:
+      steps:
+        type: steps
+    steps:
+      - restore_cache:
+          key: npm-v5-{{ checksum "package-lock.json" }}-{{ arch }}
+      - restore_cache:
+          key: node-v5-{{ checksum "package.json" }}-{{ arch }}
+      - steps: << parameters.steps >>
+      - save_cache:
+          key: npm-v5-{{ checksum "package-lock.json" }}-{{ arch }}
+          paths:
+            - ~/.npm
+      - save_cache:
+          key: node-v5-{{ checksum "package.json" }}-{{ arch }}
+          paths:
+            - node_modules
+
+# JOBS
+
+jobs:
+  setup:
+    <<: *defaults
+    <<: *docker_defaults
+    steps:
+      - checkout
+      - with_npm_cache_span:
+          steps:
+            - run: npm install
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  build-and-deploy-dev:
+    <<: *defaults
+    <<: *docker_defaults
+    steps:
+      - *attach_workspace
+      - add_ssh_keys:
+          fingerprints:
+            - "f8:b8:87:b5:12:c5:73:01:94:db:c6:51:12:7b:cb:21"
+      - run:
+          name: Add Heroku to known_hosts
+          command: ssh-keyscan -H 54.245.147.217 >> ~/.ssh/known_hosts && ssh-keyscan -H ec2-54-245-147-217.us-west-2.compute.amazonaws.com >> ~/.ssh/known_hosts
+      - run:
+          name: "Copy files"
+          command: scp -r -r ./src/* ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com:bscapi/src/
+      - run:
+          name: "Copy package json"
+          command: scp -r -r ./package.json ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com:bscapi/ && scp -r -r ./package-lock.json ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com:bscapi/
+      - run:
+          name: "Copy env"
+          command: scp -r -r ./.env.staging ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com:bscapi/
+      - run:
+          name: "Update NPM on server"
+          command: ssh ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com 'cd ./bscapi && npm install'
+      - run:
+          name: "Restart server"
+          command: ssh ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com 'pm2 restart bscapi'
+
+  lint:
+    <<: *defaults
+    <<: *docker_defaults
+    steps:
+      - *attach_workspace
+      - run:
+          name: "Lint codebase"
+          command: npm run lint
+
+  test:
+    <<: *defaults
+    <<: *docker_defaults
+    steps:
+      - *attach_workspace
+      - run:
+          name: Run Jest tests
+          command: |
+            npm run test
+
+# WORKFLOWS
+
+workflows:
+  version: 2
+
+  checks:
+    jobs:
+      - setup:
+          filters:
+            branches:
+              ignore:
+                - master
+                - release
+      - lint:
+          requires:
+            - setup
+      - test:
+          requires:
+            - setup
+  deploy-dev:
+    jobs:
+      - setup:
+          filters:
+            branches:
+              only:
+                - master
+      - build-and-deploy-dev:
+          requires:
+            - setup
+
