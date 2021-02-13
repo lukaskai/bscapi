@@ -1,4 +1,3 @@
-import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
@@ -8,8 +7,6 @@ import config from './config';
 import strings from './config/strings';
 import routes from './routes';
 import errorHandler from './helpers/errorHandler';
-
-dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 const app = express();
 
@@ -31,7 +28,7 @@ app.use(morgan((tokens, req, res) => {
 app.use('/', routes);
 app.use(errorHandler);
 app.disable('etag');
-
+console.log(config);
 const port = process.env.PORT || config.server.port;
 const server = app.listen(port, () => console.log(strings.success.apiStarted + port));
 export default server;

@@ -1,4 +1,6 @@
 /* eslint-disable */
+import dotenv from 'dotenv';
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 const $ = process.env;
 
 export default {
