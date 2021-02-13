@@ -2,17 +2,9 @@ import { Interface } from '@ethersproject/abi';
 import Web3 from 'web3';
 import { Multicall } from '../abi/Multicall';
 import config from '../../config';
-import addresses from './constants/contracts';
+import { getMulticallAddress } from './helpers';
 
 const web3 = new Web3(new Web3.providers.HttpProvider(config.web3.HTTP_PROVIDER));
-
-export const getAddress = (address) => {
-  const mainNetChainId = 56;
-  return address[mainNetChainId];
-};
-
-
-export const getMulticallAddress = () => getAddress(addresses.mulltiCall);
 
 const multicall = async (abi, calls) => {
   const multi = new web3.eth.Contract((Multicall), getMulticallAddress());
