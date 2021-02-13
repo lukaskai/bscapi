@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "export NODE_ENV=mainnet && nodemon -w src --exec \"babel-node -r dotenv/config src/app.js\"",
+    "start-prod": "rm -rf build/* && babel -d ./build ./src && mkdir build/public && cp -r src/public/* build/public && NODE_ENV=mainnet NODE_CONFIG_DIR=./build/config/ node ./build/app.js",
     "build": "babel -d ./build ./src",
     "prebuild": "rm -rf build/*",
-    "start-prod": "NODE_ENV=mainnet NODE_CONFIG_DIR=./src/config/ node ./build/app.js",
     "prestart": "npm build",
     "lint": "eslint ."
   },
