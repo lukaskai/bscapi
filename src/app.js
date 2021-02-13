@@ -9,7 +9,7 @@ import strings from './config/strings';
 import routes from './routes';
 import errorHandler from './helpers/errorHandler';
 
-dotenv.config();
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 const app = express();
 
