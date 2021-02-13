@@ -70,7 +70,7 @@ jobs:
           command: scp -r -r ./package.json ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com:bscapi/ && scp -r -r ./package-lock.json ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com:bscapi/
       - run:
           name: "Copy env"
-          command: scp -r -r ./.env.staging ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com:bscapi/
+          command: scp -r -r ./.env ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com:bscapi/
       - run:
           name: "Update NPM on server"
           command: ssh ubuntu@ec2-54-245-147-217.us-west-2.compute.amazonaws.com 'cd ./bscapi && npm install'
