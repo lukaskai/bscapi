@@ -91,6 +91,7 @@ export default {
       stakedLpTokens: data.filter((e) => e.symbol === LP_TOKEN_SYMBOL),
     };
   },
+
   fetchLpTokens: async (lpBalanceData) => {
     const data = await Promise.all(
       lpBalanceData.map(async (b) => {

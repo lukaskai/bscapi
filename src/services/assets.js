@@ -2,26 +2,40 @@ import pancakeSwapFetcher from '../protocols/pancakeSwap/fetcher';
 import pancakeSwapMapper from '../protocols/pancakeSwap/mapper';
 import autoFarmFetcher from '../protocols/autoFarm/fetcher';
 import autoFarmMapper from '../protocols/autoFarm/mapper';
+import beefyFetcher from '../protocols/beefy/fetcher';
+import beefyMapper from '../protocols/beefy/mapper';
 
 export default {
   async getAssets(address) {
     // PANCAKE SWAP
-    const pancakeSwapRawData = await pancakeSwap(address);
-    const underlyingPancakeSwap = pancakeSwapMapper.mapRawToUnderlying(pancakeSwapRawData);
+    // const pancakeSwapRawData = await pancakeSwap(address);
+    // const underlyingPancakeSwap = pancakeSwapMapper.mapRawToUnderlying(pancakeSwapRawData);
+    //
+    // // AUTOFARM
+    // const autoFarmRawData = await autoFarm(address);
+    // const underlyingAutoFarm = pancakeSwapMapper.mapRawToUnderlying(autoFarmRawData);
 
-    // AUTOFARM
-    const autoFarmRawData = await autoFarm(address);
-    const underlyingAutoFarm = pancakeSwapMapper.mapRawToUnderlying(autoFarmRawData);
+    // BEEFY FINANCE
+    const { stakedSimpleTokens, stakedLpTokens } = await beefyFetcher.fetchFarmUserStakedBalances(address);
+    const enrichedLpTokens = await autoFarmFetcher.fetchLpTokens(stakedLpTokens);
+    const enrichedLpUnderlyingTokens = await autoFarmFetcher.fetchUnderlyingLpTokens(enrichedLpTokens);
+    const beefyRawData = beefyMapper.mapToRawData(stakedSimpleTokens, enrichedLpUnderlyingTokens);
+    const underlyingBeefy = beefyMapper.mapRawToUnderlying(beefyRawData);
+
 
     return {
       asset: {
-        PancakeSwap: {
-          underlying: underlyingPancakeSwap,
-          rawData: pancakeSwapRawData,
-        },
-        AutoFarm: {
-          underlying: underlyingAutoFarm,
-          rawData: autoFarmRawData,
+        // PancakeSwap: {
+        //   underlying: underlyingPancakeSwap,
+        //   rawData: pancakeSwapRawData,
+        // },
+        // AutoFarm: {
+        //   underlying: underlyingAutoFarm,
+        //   rawData: autoFarmRawData,
+        // },
+        Beefy: {
+          underlying: underlyingBeefy,
+          rawData: beefyRawData,
         },
       },
       walletId: address,
