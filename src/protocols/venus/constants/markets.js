@@ -1,0 +1,98 @@
+exports.markets = [
+  {
+    address: '0x2ff3d0f6990a40261c66e1ff2017acbc282eb6d0',
+    symbol: 'vSXP',
+    underlyingSymbol: 'SXP',
+    underlyingAddress: '0x47bead2563dcbf3bf2c9407fea4dc236faba485a',
+  },
+  {
+    address: '0x151b1e2635a717bcdc836ecd6fbb62b674fe3e1d',
+    symbol: 'vXVS',
+    underlyingSymbol: 'XVS',
+    underlyingAddress: '0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63',
+  },
+  {
+    address: '0xeca88125a5adbe82614ffc12d0db554e2e2867c8',
+    symbol: 'vUSDC',
+    underlyingSymbol: 'USDC',
+    underlyingAddress: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
+  },
+  {
+    address: '0xfd5840cd36d94d7229439859c0112a4185bc0255',
+    symbol: 'vUSDT',
+    underlyingSymbol: 'USDT',
+    underlyingAddress: '0x55d398326f99059ff775485246999027b3197955',
+  },
+  {
+    address: '0x95c78222b3d6e262426483d42cfa53685a67ab9d',
+    symbol: 'vBUSD',
+    underlyingSymbol: 'BUSD',
+    underlyingAddress: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
+  },
+  {
+    address: '0xa07c5b74c9b40447a954e1466938b865b6bbea36',
+    symbol: 'vBNB',
+    underlyingSymbol: 'BNB',
+    underlyingAddress: null,
+  },
+  {
+    address: '0x882c173bc7ff3b7786ca16dfed3dfffb9ee7847b',
+    symbol: 'vBTC',
+    underlyingSymbol: 'BTCB',
+    underlyingAddress: '0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c',
+  },
+  {
+    address: '0xf508fcd89b8bd15579dc79a6827cb4686a3592c8',
+    symbol: 'vETH',
+    underlyingSymbol: 'ETH',
+    underlyingAddress: '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
+  },
+  {
+    address: '0x57a5297f2cb2c0aac9d554660acd6d385ab50c6b',
+    symbol: 'vLTC',
+    underlyingSymbol: 'LTC',
+    underlyingAddress: '0x4338665cbb7b2485a8855a139b75d5e34ab0db94',
+  },
+  {
+    address: '0xb248a295732e0225acd3337607cc01068e3b9c10',
+    symbol: 'vXRP',
+    underlyingSymbol: 'XRP',
+    underlyingAddress: '0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe',
+  },
+  {
+    address: '0x5f0388ebc2b94fa8e123f404b79ccf5f40b29176',
+    symbol: 'vBCH',
+    underlyingSymbol: 'BCH',
+    underlyingAddress: '0x8ff795a6f4d97e7887c79bea79aba5cc76444adf',
+  },
+  {
+    address: '0x1610bc33319e9398de5f57b33a5b184c806ad217',
+    symbol: 'vDOT',
+    underlyingSymbol: 'DOT',
+    underlyingAddress: '0x7083609fce4d1d8dc0c979aab8c869ea2c873402',
+  },
+  {
+    address: '0x650b940a1033b8a1b1873f78730fcfc73ec11f1f',
+    symbol: 'vLINK',
+    underlyingSymbol: 'LINK',
+    underlyingAddress: '0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd',
+  },
+  {
+    address: '0x334b3ecb4dca3593bccc3c7ebd1a1c1d1780fbf1',
+    symbol: 'vDAI',
+    underlyingSymbol: 'DAI',
+    underlyingAddress: '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3',
+  },
+  {
+    address: '0xf91d58b5ae142dacc749f58a49fcbac340cb0343',
+    symbol: 'vFIL',
+    underlyingSymbol: 'FIL',
+    underlyingAddress: '0x0d8ce2a99bb6e3b7db580ed848240e4a0f9ae153',
+  },
+  {
+    address: '0x972207a639cc1b374b893cc33fa251b55ceb7c07',
+    symbol: 'vBETH',
+    underlyingSymbol: 'BETH',
+    underlyingAddress: '0x250632378e573c6be1ac2f97fcdf00515d0aa91b',
+  },
+];
