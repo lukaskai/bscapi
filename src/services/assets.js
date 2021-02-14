@@ -1,38 +1,26 @@
-import {
-  fetchLpTokenBalances,
-  fetchFarmUserStakedBalances, fetchPools,
-} from '../protocols/pancakeSwap/fetcher';
+import pancakeSwapFetcher from '../protocols/pancakeSwap/fetcher';
 import pancakeSwapMapper from '../protocols/pancakeSwap/mapper';
-import {
-  fetchFarmUserStakedBalances as fetchFarmUserStakedBalancesAutoFarm, fetchLpTokens,
-  fetchTokens, fetchUnderlyingLpTokens,
-} from '../protocols/autoFarm/fetcher';
+import autoFarmFetcher from '../protocols/autoFarm/fetcher';
 import autoFarmMapper from '../protocols/autoFarm/mapper';
 
 export default {
   async getAssets(address) {
     // PANCAKE SWAP
-    // const pancakeSwapRawData = await pancakeSwap(address);
-    // const underlyingPancakeSwap = pancakeSwapMapper.mapRawToUnderlying(pancakeSwapRawData);
+    const pancakeSwapRawData = await pancakeSwap(address);
+    const underlyingPancakeSwap = pancakeSwapMapper.mapRawToUnderlying(pancakeSwapRawData);
 
     // AUTOFARM
-    const rawStakedBalances = await fetchFarmUserStakedBalancesAutoFarm(address);
-    const enrichedBalanceData = await fetchTokens(rawStakedBalances);
-    const stakedSimpleTokens = enrichedBalanceData.filter((e) => e.symbol !== 'Cake-LP');
-    const stakedLpTokens = enrichedBalanceData.filter((e) => e.symbol === 'Cake-LP');
-    const enrichedLpTokens = await fetchLpTokens(stakedLpTokens);
-    const enrichedLpUnderlyingTokens = await fetchUnderlyingLpTokens(enrichedLpTokens);
-    const autoFarmRawData = autoFarmMapper.mapToRawData(stakedSimpleTokens, enrichedLpUnderlyingTokens);
-    const autoFarmUnderlying = autoFarmMapper.mapRawToUnderlying(autoFarmRawData);
+    const autoFarmRawData = await autoFarm(address);
+    const underlyingAutoFarm = pancakeSwapMapper.mapRawToUnderlying(autoFarmRawData);
 
     return {
       asset: {
-        // PancakeSwap: {
-        //   underlying: underlyingPancakeSwap,
-        //   rawData: pancakeSwapRawData,
-        // },
+        PancakeSwap: {
+          underlying: underlyingPancakeSwap,
+          rawData: pancakeSwapRawData,
+        },
         AutoFarm: {
-          underlying: autoFarmUnderlying,
+          underlying: underlyingAutoFarm,
           rawData: autoFarmRawData,
         },
       },
@@ -45,14 +33,25 @@ async function pancakeSwap(address) {
   const [lpTokensUnderlying,
     userLpTokenBalances,
     userStakedBalances] = await Promise.all([
-    fetchPools(),
-    fetchLpTokenBalances(address),
-    fetchFarmUserStakedBalances(address)]);
+    pancakeSwapFetcher.fetchPools(),
+    pancakeSwapFetcher.fetchLpTokenBalances(address),
+    pancakeSwapFetcher.fetchFarmUserStakedBalances(address)]);
 
   const rawData = pancakeSwapMapper.mapToRawData(lpTokensUnderlying,
     userLpTokenBalances,
     userStakedBalances);
 
+
+  return rawData;
+}
+
+async function autoFarm(address) {
+  const rawStakedBalances = await autoFarmFetcher.fetchFarmUserStakedBalances(address);
+  const { stakedLpTokens, stakedSimpleTokens } = await autoFarmFetcher.fetchTokenMetadata(rawStakedBalances);
+  const enrichedLpTokens = await autoFarmFetcher.fetchLpTokens(stakedLpTokens);
+  const enrichedLpUnderlyingTokens = await autoFarmFetcher.fetchUnderlyingLpTokens(enrichedLpTokens);
+
+  const rawData = autoFarmMapper.mapToRawData(stakedSimpleTokens, enrichedLpUnderlyingTokens);
 
   return rawData;
 }
