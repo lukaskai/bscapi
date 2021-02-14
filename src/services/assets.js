@@ -2,31 +2,28 @@ import {
   fetchLpTokenBalances,
   fetchFarmUserStakedBalances, fetchPools,
 } from '../protocols/pancakeSwap/fetcher';
-import { mapRawToUnderlying, mapToRawData } from '../protocols/pancakeSwap/mapper';
+import pancakeSwapMapper from '../protocols/pancakeSwap/mapper';
 import {
   fetchFarmUserStakedBalances as fetchFarmUserStakedBalancesAutoFarm, fetchLpTokens,
   fetchTokens, fetchUnderlyingLpTokens,
 } from '../protocols/autoFarm/fetcher';
-import farmsConfig from '../protocols/pancakeSwap/constants/farms';
-import { getAddress } from '../protocols/pancakeSwap/helpers';
-import { mapRawToUnderlyingA, mapToRawDataA } from '../protocols/autoFarm/mapper';
+import autoFarmMapper from '../protocols/autoFarm/mapper';
 
 export default {
   async getAssets(address) {
     // PANCAKE SWAP
     // const pancakeSwapRawData = await pancakeSwap(address);
-    // const underlyingPancakeSwap = mapRawToUnderlying(pancakeSwapRawData);
+    // const underlyingPancakeSwap = pancakeSwapMapper.mapRawToUnderlying(pancakeSwapRawData);
 
     // AUTOFARM
     const rawStakedBalances = await fetchFarmUserStakedBalancesAutoFarm(address);
-    // console.log(rawStakedBalances);
     const enrichedBalanceData = await fetchTokens(rawStakedBalances);
     const stakedSimpleTokens = enrichedBalanceData.filter((e) => e.symbol !== 'Cake-LP');
     const stakedLpTokens = enrichedBalanceData.filter((e) => e.symbol === 'Cake-LP');
     const enrichedLpTokens = await fetchLpTokens(stakedLpTokens);
     const enrichedLpUnderlyingTokens = await fetchUnderlyingLpTokens(enrichedLpTokens);
-    const autoFarmRawData = mapToRawDataA(stakedSimpleTokens, enrichedLpUnderlyingTokens);
-    const autoFarmUnderlying = mapRawToUnderlyingA(autoFarmRawData);
+    const autoFarmRawData = autoFarmMapper.mapToRawData(stakedSimpleTokens, enrichedLpUnderlyingTokens);
+    const autoFarmUnderlying = autoFarmMapper.mapRawToUnderlying(autoFarmRawData);
 
     return {
       asset: {
@@ -52,7 +49,7 @@ async function pancakeSwap(address) {
     fetchLpTokenBalances(address),
     fetchFarmUserStakedBalances(address)]);
 
-  const rawData = mapToRawData(lpTokensUnderlying,
+  const rawData = pancakeSwapMapper.mapToRawData(lpTokensUnderlying,
     userLpTokenBalances,
     userStakedBalances);
 

@@ -15,5 +15,8 @@ export default {
   },
   math: {
     DECIMALS_FOR_DISPLAY: parseInt($.DECIMALS_FOR_DISPLAY)
+  },
+  addresses: {
+    MULTI_CALL_ADDRESS: $.MULTI_CALL_ADDRESS
   }
 };

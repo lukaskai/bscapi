@@ -2,8 +2,13 @@ import BigNumber from 'bignumber.js';
 import { ERC20 } from '../abi/ERC20';
 import { MasterChef } from '../abi/MasterChef';
 import farmsConfig from './constants/farms';
-import multicall from './multicall';
-import { getAddress, getFullDisplayBalance, getMasterChefAddress } from './helpers';
+import multicall from '../shared/multicall';
+import { getFullDisplayBalance } from '../shared/helpers';
+import config from '../../config';
+import addresses from './constants/contracts';
+
+export const getAddress = (address) => address[config.web3.CHAIN_ID];
+export const getMasterChefAddress = () => getAddress(addresses.masterChef);
 
 export const fetchLpTokenBalances = async (account) => {
   const calls = farmsConfig.map((farm) => {

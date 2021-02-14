@@ -2,25 +2,16 @@ import BigNumber from 'bignumber.js';
 import { ERC20 } from '../abi/ERC20';
 import { ERC20LP } from '../abi/ERC20LP';
 import { MasterChefAutoFarm } from '../abi/MasterChefAutoFarm';
-import farmsConfig from './constants/farms';
-import multicall from './multicall';
-import { getAddress, getFullDisplayBalance, getMasterChefAddress } from './helpers';
+import multicall from '../shared/multicall';
 
-const poolLength = 65;
+const MASTERCHEF_ADDRESS = '0x0895196562c7868c5be92459fae7f877ed450452';
+const POOL_LENGTH = 65;
 
 const getFarmData = async () => {
-  const masterChefAdress = getMasterChefAddress();
-  const pancakeSwapFarms = [];
-
-  Object.keys(farmsConfig.pools).forEach((dataKey) => {
-    const farm = farmsConfig.pools[dataKey];
-    if (farm.farmPid && pancakeSwapFarms.indexOf(farm.farmPid) === -1) pancakeSwapFarms.push(farm.farmPid);
-  });
-
   const calls = [];
-  for (let i = 1; i < poolLength; i += 1) {
+  for (let i = 1; i < POOL_LENGTH; i += 1) {
     calls.push({
-      address: masterChefAdress,
+      address: MASTERCHEF_ADDRESS,
       name: 'poolInfo',
       params: [i],
     });
@@ -29,7 +20,7 @@ const getFarmData = async () => {
   const callsResponse = await multicall(MasterChefAutoFarm, calls);
   const poolTokenAddresses = {};
 
-  for (let i = 1; i < poolLength; i += 1) {
+  for (let i = 1; i < POOL_LENGTH; i += 1) {
     // eslint-disable-next-line prefer-destructuring
     poolTokenAddresses[i] = callsResponse[i - 1][0];
   }
@@ -38,14 +29,13 @@ const getFarmData = async () => {
 };
 
 export const fetchFarmUserStakedBalances = async (account) => {
-  const masterChefAdress = getMasterChefAddress();
   const poolTokenAddresses = await getFarmData();
 
   const calls = [];
 
   Object.keys(poolTokenAddresses).forEach((pid) => {
     calls.push({
-      address: masterChefAdress,
+      address: MASTERCHEF_ADDRESS,
       name: 'stakedWantTokens',
       params: [pid, account],
     });
