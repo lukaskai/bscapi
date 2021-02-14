@@ -1,19 +1,17 @@
 import BigNumber from 'bignumber.js';
-import Web3 from 'web3';
 import { ERC20 } from '../abi/ERC20';
 import { BeefyVault } from '../abi/BeefyVault';
-import { MasterChefAutoFarm } from '../abi/MasterChefAutoFarm';
 import multicall from '../shared/multicall';
 import { getFullDisplayBalance } from '../shared/helpers';
-import { pools } from './pools';
-import config from '../../config';
+import { pools } from './constants/pools';
 
-const tokensFromPools = {};
+const tokensList = [];
 const LP_TOKEN_SYMBOL = 'LP';
 const poolsLatest = pools;
-const web3 = new Web3(new Web3.providers.HttpProvider(config.web3.HTTP_PROVIDER));
 
-function setTokens() {
+(function loadTokens() {
+  const tokensFromPools = {};
+
   poolsLatest.forEach(({
     token, tokenAddress, earnedToken, earnedTokenAddress,
   }) => {
@@ -26,13 +24,7 @@ function setTokens() {
       tokenBalance: 0,
     };
   });
-}
 
-setTokens();
-
-
-async function fetchBalances(account) {
-  const tokensList = [];
   Object.keys(tokensFromPools).forEach((key) => {
     if (tokensFromPools[key].tokenAddress) {
       tokensList.push({
@@ -42,7 +34,10 @@ async function fetchBalances(account) {
       });
     }
   });
+}());
 
+
+async function fetchBalances(account) {
   const calls = [];
 
   tokensList.forEach((token) => {
@@ -65,6 +60,10 @@ async function fetchBalances(account) {
     }
   });
 
+  return newTokens;
+}
+
+async function updatePoolPricePerShare() {
   const poolCalls = [];
 
   poolsLatest.forEach((pool) => {
@@ -78,14 +77,16 @@ async function fetchBalances(account) {
   poolsLatest.forEach((pool, i) => {
     pool.pricePerFullShare = getFullDisplayBalance(new BigNumber(responsePools[i][0]._hex), pool.tokenDecimals);
   });
-  return newTokens;
 }
 
 export default {
   fetchFarmUserStakedBalances: async (account) => {
+    await updatePoolPricePerShare();
+
     const stakedBalances = [];
     const tokens = await fetchBalances(account);
-    poolsLatest.map((pool, index) => {
+
+    poolsLatest.map((pool) => {
       const sharesBalance = new BigNumber(tokens[pool.earnedToken].tokenBalance);
       const rawStakedBalance = getFullDisplayBalance(
         sharesBalance.multipliedBy(new BigNumber(pool.pricePerFullShare)), pool.tokenDecimals,

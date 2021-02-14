@@ -4,35 +4,34 @@ import autoFarmFetcher from '../protocols/autoFarm/fetcher';
 import autoFarmMapper from '../protocols/autoFarm/mapper';
 import beefyFetcher from '../protocols/beefy/fetcher';
 import beefyMapper from '../protocols/beefy/mapper';
+import sharedMapper from '../protocols/shared/mapper';
+import sharedFetcher from '../protocols/shared/fetcher';
 
 export default {
   async getAssets(address) {
     // PANCAKE SWAP
-    // const pancakeSwapRawData = await pancakeSwap(address);
-    // const underlyingPancakeSwap = pancakeSwapMapper.mapRawToUnderlying(pancakeSwapRawData);
-    //
-    // // AUTOFARM
-    // const autoFarmRawData = await autoFarm(address);
-    // const underlyingAutoFarm = pancakeSwapMapper.mapRawToUnderlying(autoFarmRawData);
+    const pancakeSwapRawData = await pancakeSwap(address);
+    const underlyingPancakeSwap = sharedMapper.mapRawToUnderlying(pancakeSwapRawData);
+
+    // AUTOFARM
+    const autoFarmRawData = await autoFarm(address);
+    const underlyingAutoFarm = sharedMapper.mapRawToUnderlying(autoFarmRawData);
 
     // BEEFY FINANCE
-    const { stakedSimpleTokens, stakedLpTokens } = await beefyFetcher.fetchFarmUserStakedBalances(address);
-    const enrichedLpTokens = await autoFarmFetcher.fetchLpTokens(stakedLpTokens);
-    const enrichedLpUnderlyingTokens = await autoFarmFetcher.fetchUnderlyingLpTokens(enrichedLpTokens);
-    const beefyRawData = beefyMapper.mapToRawData(stakedSimpleTokens, enrichedLpUnderlyingTokens);
-    const underlyingBeefy = beefyMapper.mapRawToUnderlying(beefyRawData);
+    const beefyRawData = await beefy(address);
+    const underlyingBeefy = sharedMapper.mapRawToUnderlying(beefyRawData);
 
 
     return {
       asset: {
-        // PancakeSwap: {
-        //   underlying: underlyingPancakeSwap,
-        //   rawData: pancakeSwapRawData,
-        // },
-        // AutoFarm: {
-        //   underlying: underlyingAutoFarm,
-        //   rawData: autoFarmRawData,
-        // },
+        PancakeSwap: {
+          underlying: underlyingPancakeSwap,
+          rawData: pancakeSwapRawData,
+        },
+        AutoFarm: {
+          underlying: underlyingAutoFarm,
+          rawData: autoFarmRawData,
+        },
         Beefy: {
           underlying: underlyingBeefy,
           rawData: beefyRawData,
@@ -62,10 +61,19 @@ async function pancakeSwap(address) {
 async function autoFarm(address) {
   const rawStakedBalances = await autoFarmFetcher.fetchFarmUserStakedBalances(address);
   const { stakedLpTokens, stakedSimpleTokens } = await autoFarmFetcher.fetchTokenMetadata(rawStakedBalances);
-  const enrichedLpTokens = await autoFarmFetcher.fetchLpTokens(stakedLpTokens);
-  const enrichedLpUnderlyingTokens = await autoFarmFetcher.fetchUnderlyingLpTokens(enrichedLpTokens);
+  const enrichedLpTokens = await sharedFetcher.fetchLpTokens(stakedLpTokens);
+  const enrichedLpUnderlyingTokens = await sharedFetcher.fetchUnderlyingLpTokens(enrichedLpTokens);
 
   const rawData = autoFarmMapper.mapToRawData(stakedSimpleTokens, enrichedLpUnderlyingTokens);
+
+  return rawData;
+}
+
+async function beefy(address) {
+  const { stakedSimpleTokens, stakedLpTokens } = await beefyFetcher.fetchFarmUserStakedBalances(address);
+  const enrichedLpTokens = await sharedFetcher.fetchLpTokens(stakedLpTokens);
+  const enrichedLpUnderlyingTokens = await sharedFetcher.fetchUnderlyingLpTokens(enrichedLpTokens);
+  const rawData = beefyMapper.mapToRawData(stakedSimpleTokens, enrichedLpUnderlyingTokens);
 
   return rawData;
 }
