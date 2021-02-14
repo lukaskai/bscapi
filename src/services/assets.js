@@ -11,43 +11,43 @@ import venusMapper from '../protocols/venus/mapper';
 
 export default {
   async getAssets(address) {
-    // // PANCAKE SWAP
-    // const pancakeSwapRawData = await pancakeSwap(address);
-    // const underlyingPancakeSwap = sharedMapper.mapRawToUnderlying(pancakeSwapRawData);
+    // PANCAKE SWAP
+    const pancakeSwapRawData = await pancakeSwap(address);
+    const underlyingPancakeSwap = sharedMapper.mapRawToUnderlying(pancakeSwapRawData);
     //
-    // // AUTOFARM
-    // const autoFarmRawData = await autoFarm(address);
-    // const underlyingAutoFarm = sharedMapper.mapRawToUnderlying(autoFarmRawData);
+    // AUTOFARM
+    const autoFarmRawData = await autoFarm(address);
+    const underlyingAutoFarm = sharedMapper.mapRawToUnderlying(autoFarmRawData);
     //
-    // // BEEFY FINANCE
-    // const beefyRawData = await beefy(address);
-    // const underlyingBeefy = sharedMapper.mapRawToUnderlying(beefyRawData);
+    // BEEFY FINANCE
+    const beefyRawData = await beefy(address);
+    const underlyingBeefy = sharedMapper.mapRawToUnderlying(beefyRawData);
 
     // VENUS
-    const venusRawData = await venusFetcher.fetchUserUnderlying(address);
-    const underlyingVenus = await venusMapper.mapRawToUnderlying(venusRawData);
-    const debtVenus = await venusMapper.mapRawToDebt(venusRawData);
+    // const venusRawData = await venusFetcher.fetchUserBalances(address);
+    // const underlyingVenus = await venusMapper.mapRawToUnderlying(venusRawData);
+    // const debtVenus = await venusMapper.mapRawToDebt(venusRawData);
 
 
     return {
       asset: {
-        // PancakeSwap: {
-        //   underlying: underlyingPancakeSwap,
-        //   rawData: pancakeSwapRawData,
-        // },
-        // AutoFarm: {
-        //   underlying: underlyingAutoFarm,
-        //   rawData: autoFarmRawData,
-        // },
-        // Beefy: {
-        //   underlying: underlyingBeefy,
-        //   rawData: beefyRawData,
-        // },
-        Venus: {
-          underlying: underlyingVenus,
-          debt: debtVenus,
-          rawData: venusRawData,
+        PancakeSwap: {
+          underlying: underlyingPancakeSwap,
+          rawData: pancakeSwapRawData,
         },
+        AutoFarm: {
+          underlying: underlyingAutoFarm,
+          rawData: autoFarmRawData,
+        },
+        Beefy: {
+          underlying: underlyingBeefy,
+          rawData: beefyRawData,
+        },
+        // Venus: {
+        //   underlying: underlyingVenus,
+        //   debt: debtVenus,
+        //   rawData: venusRawData,
+        // },
       },
       walletId: address,
     };

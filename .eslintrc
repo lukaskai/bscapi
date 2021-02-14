@@ -24,6 +24,7 @@
         "require-atomic-updates": "warn",
         "no-unused-vars": "off",
         "array-callback-return": "off",
+        "prefer-destructuring": "off",
         "max-len": ["error", { "code": 120 }],
         "no-underscore-dangle": "off",
         "no-use-before-define": ["error", { "functions": false, "classes": false }],

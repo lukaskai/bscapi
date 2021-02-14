@@ -5,39 +5,9 @@ import multicall from '../shared/multicall';
 import { getFullDisplayBalance } from '../shared/helpers';
 import { pools } from './constants/pools';
 
-const tokensList = [];
 const LP_TOKEN_SYMBOL = 'LP';
-const poolsLatest = pools;
 
-(function loadTokens() {
-  const tokensFromPools = {};
-
-  poolsLatest.forEach(({
-    token, tokenAddress, earnedToken, earnedTokenAddress,
-  }) => {
-    tokensFromPools[token] = {
-      tokenAddress,
-      tokenBalance: 0,
-    };
-    tokensFromPools[earnedToken] = {
-      tokenAddress: earnedTokenAddress,
-      tokenBalance: 0,
-    };
-  });
-
-  Object.keys(tokensFromPools).forEach((key) => {
-    if (tokensFromPools[key].tokenAddress) {
-      tokensList.push({
-        token: key,
-        tokenAddress: tokensFromPools[key].tokenAddress,
-        tokenBalance: tokensFromPools[key].tokenBalance,
-      });
-    }
-  });
-}());
-
-
-async function fetchBalances(account) {
+async function fetchBalances(account, tokensList) {
   const calls = [];
 
   tokensList.forEach((token) => {
@@ -63,10 +33,36 @@ async function fetchBalances(account) {
   return newTokens;
 }
 
-async function updatePoolPricePerShare() {
+async function fetchPoolData() {
+  const tokensFromPools = {};
+  const tokensList = [];
+  const poolsLatest = [];
+
+  pools.forEach(({
+    token, tokenAddress, earnedToken, earnedTokenAddress,
+  }) => {
+    tokensFromPools[token] = {
+      tokenAddress,
+      tokenBalance: 0,
+    };
+    tokensFromPools[earnedToken] = {
+      tokenAddress: earnedTokenAddress,
+      tokenBalance: 0,
+    };
+  });
+
+  Object.keys(tokensFromPools).forEach((key) => {
+    if (tokensFromPools[key].tokenAddress) {
+      tokensList.push({
+        token: key,
+        tokenAddress: tokensFromPools[key].tokenAddress,
+        tokenBalance: tokensFromPools[key].tokenBalance,
+      });
+    }
+  });
   const poolCalls = [];
 
-  poolsLatest.forEach((pool) => {
+  pools.forEach((pool) => {
     poolCalls.push({
       address: pool.earnedTokenAddress,
       name: 'getPricePerFullShare',
@@ -74,17 +70,25 @@ async function updatePoolPricePerShare() {
   });
 
   const responsePools = await multicall(BeefyVault, poolCalls);
-  poolsLatest.forEach((pool, i) => {
-    pool.pricePerFullShare = getFullDisplayBalance(new BigNumber(responsePools[i][0]._hex), pool.tokenDecimals);
+  pools.forEach((pool, i) => {
+    poolsLatest.push({
+      ...pool,
+      pricePerFullShare: getFullDisplayBalance(new BigNumber(responsePools[i][0]._hex), pool.tokenDecimals),
+    });
   });
+
+  return {
+    tokensList,
+    poolsLatest,
+  };
 }
 
 export default {
   fetchFarmUserStakedBalances: async (account) => {
-    await updatePoolPricePerShare();
+    const { tokensList, poolsLatest } = await fetchPoolData();
 
     const stakedBalances = [];
-    const tokens = await fetchBalances(account);
+    const tokens = await fetchBalances(account, tokensList);
 
     poolsLatest.map((pool) => {
       const sharesBalance = new BigNumber(tokens[pool.earnedToken].tokenBalance);
