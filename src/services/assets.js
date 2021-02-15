@@ -14,21 +14,21 @@ import apeSwapMapper from '../protocols/apeSwap/mapper';
 export default {
   async getAssets(address) {
     // PANCAKE SWAP
-    // const pancakeSwapRawData = await pancakeSwap(address);
-    // const underlyingPancakeSwap = sharedMapper.mapRawToUnderlying(pancakeSwapRawData);
+    const pancakeSwapRawData = await pancakeSwap(address);
+    const underlyingPancakeSwap = sharedMapper.mapRawToUnderlying(pancakeSwapRawData);
+
+    // AUTOFARM
+    const autoFarmRawData = await autoFarm(address);
+    const underlyingAutoFarm = sharedMapper.mapRawToUnderlying(autoFarmRawData);
     //
-    // // AUTOFARM
-    // const autoFarmRawData = await autoFarm(address);
-    // const underlyingAutoFarm = sharedMapper.mapRawToUnderlying(autoFarmRawData);
-    // //
-    // // BEEFY FINANCE
-    // const beefyRawData = await beefy(address);
-    // const underlyingBeefy = sharedMapper.mapRawToUnderlying(beefyRawData);
-    //
-    // // VENUS
-    // const venusRawData = await venusFetcher.fetchUserBalances(address);
-    // const underlyingVenus = await venusMapper.mapRawToUnderlying(venusRawData);
-    // const debtVenus = await venusMapper.mapRawToDebt(venusRawData);
+    // BEEFY FINANCE
+    const beefyRawData = await beefy(address);
+    const underlyingBeefy = sharedMapper.mapRawToUnderlying(beefyRawData);
+
+    // VENUS
+    const venusRawData = await venusFetcher.fetchUserBalances(address);
+    const underlyingVenus = await venusMapper.mapRawToUnderlying(venusRawData);
+    const debtVenus = await venusMapper.mapRawToDebt(venusRawData);
 
     // APESWAP
     const apeSwapRawData = await apeSwap(address);

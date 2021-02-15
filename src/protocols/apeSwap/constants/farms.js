@@ -9,7 +9,7 @@ const farms = [
       97: '0xc987bea2149629ff83c11ffabfd07b45ecb94700', // Banana token
       56: '0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95',
     },
-    tokenSymbol: 'BANANA-SPLIT',
+    tokenSymbol: 'BANANA',
     tokenAddresses: {
       97: '0xc987bea2149629ff83c11ffabfd07b45ecb94700', // Banana Token
       56: '0x603c7f932ED1fc6575303D8Fb018fDCBb0f39a95',
