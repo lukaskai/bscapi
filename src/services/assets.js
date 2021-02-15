@@ -24,9 +24,9 @@ export default {
     const underlyingBeefy = sharedMapper.mapRawToUnderlying(beefyRawData);
 
     // VENUS
-    // const venusRawData = await venusFetcher.fetchUserBalances(address);
-    // const underlyingVenus = await venusMapper.mapRawToUnderlying(venusRawData);
-    // const debtVenus = await venusMapper.mapRawToDebt(venusRawData);
+    const venusRawData = await venusFetcher.fetchUserBalances(address);
+    const underlyingVenus = await venusMapper.mapRawToUnderlying(venusRawData);
+    const debtVenus = await venusMapper.mapRawToDebt(venusRawData);
 
 
     return {
@@ -43,11 +43,11 @@ export default {
           underlying: underlyingBeefy,
           rawData: beefyRawData,
         },
-        // Venus: {
-        //   underlying: underlyingVenus,
-        //   debt: debtVenus,
-        //   rawData: venusRawData,
-        // },
+        Venus: {
+          underlying: underlyingVenus,
+          debt: debtVenus,
+          rawData: venusRawData,
+        },
       },
       walletId: address,
     };
