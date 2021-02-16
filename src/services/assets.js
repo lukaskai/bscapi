@@ -37,23 +37,23 @@ export default {
 
     return {
       asset: {
-        // PancakeSwap: {
-        //   underlying: underlyingPancakeSwap,
-        //   rawData: pancakeSwapRawData,
-        // },
-        // AutoFarm: {
-        //   underlying: underlyingAutoFarm,
-        //   rawData: autoFarmRawData,
-        // },
-        // Beefy: {
-        //   underlying: underlyingBeefy,
-        //   rawData: beefyRawData,
-        // },
-        // Venus: {
-        //   underlying: underlyingVenus,
-        //   debt: debtVenus,
-        //   rawData: venusRawData,
-        // },
+        PancakeSwap: {
+          underlying: underlyingPancakeSwap,
+          rawData: pancakeSwapRawData,
+        },
+        AutoFarm: {
+          underlying: underlyingAutoFarm,
+          rawData: autoFarmRawData,
+        },
+        Beefy: {
+          underlying: underlyingBeefy,
+          rawData: beefyRawData,
+        },
+        Venus: {
+          underlying: underlyingVenus,
+          debt: debtVenus,
+          rawData: venusRawData,
+        },
         ApeSwap: {
           underlying: underlyingApeSwap,
           rawData: apeSwapRawData,
