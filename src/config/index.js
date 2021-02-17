@@ -14,7 +14,8 @@ export default {
     CHAIN_ID: parseInt($.WEB3_CHAIN_ID),
   },
   math: {
-    DECIMALS_FOR_DISPLAY: parseInt($.DECIMALS_FOR_DISPLAY)
+    DECIMALS_FOR_DISPLAY: parseInt($.DECIMALS_FOR_DISPLAY),
+    DECIMALS_DEFAULT: parseInt($.DECIMALS_DEFAULT)
   },
   addresses: {
     MULTI_CALL_ADDRESS: $.MULTI_CALL_ADDRESS

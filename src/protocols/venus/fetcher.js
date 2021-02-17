@@ -5,7 +5,7 @@ import { markets } from './constants/markets';
 import multicall from '../shared/multicall';
 import config from '../../config';
 
-const DEFAULT_DECIMALS = 18;
+const DEFAULT_DECIMALS = config.math.DECIMALS_DEFAULT;
 const V_TOKEN_DECIMALS = 8;
 
 async function fetchTokenMetadataAndRate() {

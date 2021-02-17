@@ -2,10 +2,7 @@ import BigNumber from 'bignumber.js';
 import { ERC20 } from '../abi/ERC20';
 import { MasterChef } from '../abi/MasterChef';
 import multicall from './multicall';
-import { getFullDisplayBalance } from './helpers';
-import config from '../../config';
-
-export const getAddress = (address) => address[config.web3.CHAIN_ID];
+import { getFullDisplayBalance, getAddress } from './helpers';
 
 export default {
   fetchLpTokenBalances: async (farmsConfig, account) => {

@@ -15,6 +15,7 @@ app.use(cors());
 app.options('*', cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '1mb', extended: true }));
+
 app.use(morgan((tokens, req, res) => {
   const json = {
     method: tokens.method(req, res),
@@ -25,10 +26,11 @@ app.use(morgan((tokens, req, res) => {
   };
   console.log('API called', json);
 }));
+
 app.use('/', routes);
 app.use(errorHandler);
 app.disable('etag');
-console.log(config);
+
 const port = process.env.PORT || config.server.port;
 const server = app.listen(port, () => console.log(strings.success.apiStarted + port));
 export default server;

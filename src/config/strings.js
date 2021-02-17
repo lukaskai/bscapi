@@ -15,4 +15,8 @@ module.exports = {
     appListening: 'App listening on port: ',
     apiStarted: 'Node + Express REST API server started on port: ',
   },
+
+  custom: {
+    lpTokenSymbol: 'LP'
+  }
 };

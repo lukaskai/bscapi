@@ -4,8 +4,9 @@ import { BeefyVault } from '../abi/BeefyVault';
 import multicall from '../shared/multicall';
 import { getFullDisplayBalance } from '../shared/helpers';
 import { pools } from './constants/pools';
+import strings from '../../config/strings';
 
-const LP_TOKEN_SYMBOL = 'LP';
+const LP_TOKEN_SYMBOL = strings.custom.lpTokenSymbol;
 
 async function fetchBalances(account, tokensList) {
   const calls = [];

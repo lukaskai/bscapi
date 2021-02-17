@@ -2,10 +2,13 @@ import BigNumber from 'bignumber.js';
 import { ERC20 } from '../abi/ERC20';
 import { MasterChefAutoFarm } from '../abi/MasterChefAutoFarm';
 import multicall from '../shared/multicall';
+import addresses from './constants/contracts';
+import { getMasterChefAddress } from '../shared/helpers';
+import strings from '../../config/strings';
 
-const MASTERCHEF_ADDRESS = '0x0895196562c7868c5be92459fae7f877ed450452';
+const MASTERCHEF_ADDRESS = getMasterChefAddress(addresses);
+const LP_TOKEN_SYMBOL = strings.custom.lpTokenSymbol;
 const POOL_LENGTH = 65;
-const LP_TOKEN_SYMBOL = 'Cake-LP';
 
 const getFarmData = async () => {
   const calls = [];
@@ -21,7 +24,6 @@ const getFarmData = async () => {
   const poolTokenAddresses = {};
 
   for (let i = 1; i < POOL_LENGTH; i += 1) {
-    // eslint-disable-next-line prefer-destructuring
     poolTokenAddresses[i] = callsResponse[i - 1][0];
   }
 
@@ -86,8 +88,8 @@ export default {
     );
 
     return {
-      stakedSimpleTokens: data.filter((e) => e.symbol !== LP_TOKEN_SYMBOL),
-      stakedLpTokens: data.filter((e) => e.symbol === LP_TOKEN_SYMBOL),
+      stakedSimpleTokens: data.filter((e) => !e.symbol.includes(LP_TOKEN_SYMBOL)),
+      stakedLpTokens: data.filter((e) => e.symbol.includes(LP_TOKEN_SYMBOL)),
     };
   },
 };

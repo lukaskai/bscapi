@@ -90,16 +90,6 @@ jobs:
           name: "Lint codebase"
           command: npm run lint
 
-  test:
-    <<: *defaults
-    <<: *docker_defaults
-    steps:
-      - *attach_workspace
-      - run:
-          name: Run Jest tests
-          command: |
-            npm run test
-
 # WORKFLOWS
 
 workflows:

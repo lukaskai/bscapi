@@ -12,11 +12,6 @@ routes.get('/', (req, res) => {
   res.status(200).json({ message: strings.success.ok });
 });
 
-// DOWN
-routes.use('/down', (req, res) => {
-  res.sendStatus(503);
-});
-
 routes.use((req, res) => {
   res.status(404).send({
     success: false,

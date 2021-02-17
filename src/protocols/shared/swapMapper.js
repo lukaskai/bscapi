@@ -9,8 +9,6 @@ export default {
     userStakedBalances) => {
     const rawData = {};
 
-    console.log(JSON.stringify(lpTokensUnderlying));
-
     lpTokensUnderlying.forEach((underlying, index) => {
       const farmPool = farmsConfig[index];
       const stakedBalanceInPoolRaw = userStakedBalances[index];
