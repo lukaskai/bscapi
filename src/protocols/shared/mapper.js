@@ -16,7 +16,7 @@ export default {
         };
       }
 
-      if (entry.quoteTokenSymbol) {
+      if (entry.quoteTokenSymbol && entry.totalUnderlyingQuoteTokenBalance) {
         entry.quoteTokenSymbol = entry.quoteTokenSymbol.toUpperCase();
         if (underlying[entry.quoteTokenSymbol]) {
           underlying[entry.quoteTokenSymbol].amount += entry.totalUnderlyingQuoteTokenBalance;
