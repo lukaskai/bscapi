@@ -7,6 +7,7 @@ import config from '../../config';
 import cache from '../../helpers/cache';
 
 const PANCAKE_SWAP_TOKEN_ENDPOINT = config.external.PANCAKE_SWAP_TOKEN_ENDPOINT;
+const PANCAKE_SWAP_TOKEN_CACHE_HOURS = config.external.PANCAKE_SWAP_TOKEN_CACHE_HOURS;
 
 export default {
   fetchLpTokens: async () => {
@@ -35,7 +36,7 @@ export default {
     });
 
     const invalidationDate = new Date();
-    invalidationDate.setHours(invalidationDate.getHours() + 1);
+    invalidationDate.setHours(invalidationDate.getHours() + PANCAKE_SWAP_TOKEN_CACHE_HOURS);
 
     cache.store(PANCAKE_SWAP_TOKEN_ENDPOINT, pairs, invalidationDate);
 
