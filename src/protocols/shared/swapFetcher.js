@@ -5,9 +5,9 @@ import multicall from './multicall';
 import { getFullDisplayBalance, getAddress } from './helpers';
 
 export default {
-  fetchLpTokenBalances: async (farmsConfig, account) => {
-    const calls = farmsConfig.map((farm) => {
-      const lpContractAddress = getAddress(farm.lpAddresses);
+  fetchLpTokenBalances: async (lpTokens, account) => {
+    const calls = lpTokens.map((lpToken) => {
+      const lpContractAddress = getAddress(lpToken.lpAddresses);
       return {
         address: lpContractAddress,
         name: 'balanceOf',
@@ -34,41 +34,41 @@ export default {
     return parsedStakedBalances;
   },
 
-  fetchPools: async (farmsConfig) => {
+  fetchLpTokenMetadata: async (lpTokens) => {
     const data = await Promise.all(
-      farmsConfig.map(async (farmConfig) => {
-        const lpAdress = getAddress(farmConfig.lpAddresses);
+      lpTokens.map(async (lpToken) => {
+        const lpAddress = getAddress(lpToken.lpAddresses);
         const calls = [
           // Balance of token in the LP contract
           {
-            address: getAddress(farmConfig.tokenAddresses),
+            address: getAddress(lpToken.tokenAddresses),
             name: 'balanceOf',
-            params: [lpAdress],
+            params: [lpAddress],
           },
           // Balance of quote token on LP contract
           {
-            address: getAddress(farmConfig.quoteTokenAdresses),
+            address: getAddress(lpToken.quoteTokenAdresses),
             name: 'balanceOf',
-            params: [lpAdress],
+            params: [lpAddress],
           },
           // Total supply of LP tokens
           {
-            address: lpAdress,
+            address: lpAddress,
             name: 'totalSupply',
           },
           // Token decimals
           {
-            address: getAddress(farmConfig.tokenAddresses),
+            address: getAddress(lpToken.tokenAddresses),
             name: 'decimals',
           },
           // Quote token decimals
           {
-            address: getAddress(farmConfig.quoteTokenAdresses),
+            address: getAddress(lpToken.quoteTokenAdresses),
             name: 'decimals',
           },
           // Lp token decimals
           {
-            address: lpAdress,
+            address: lpAddress,
             name: 'decimals',
           },
         ];
@@ -83,7 +83,7 @@ export default {
         ] = await multicall(ERC20, calls);
 
         return {
-          ...farmConfig,
+          ...lpToken,
           underlyingTokenSupply: getFullDisplayBalance(new BigNumber(tokenBalanceLP), tokenDecimals),
           underlyingQuoteTokenSupply: getFullDisplayBalance(new BigNumber(quoteTokenBlanceLP), quoteTokenDecimals),
           lpTotalSupply: getFullDisplayBalance(new BigNumber(lpTotalSupply), lpTokenDecimals),

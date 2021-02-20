@@ -1,27 +1,31 @@
+import BigNumber from 'bignumber.js';
 import { getFullDisplayBalance, getLiquidityValue } from './helpers';
 import config from '../../config';
 
 export const getAddress = (address) => address[config.web3.CHAIN_ID];
 
 export default {
-  mapToRawData: (farmsConfig, lpTokensUnderlying,
-    userLpTokenBalances,
-    userStakedBalances) => {
+  mapToRawData: (farmsConfig, lpTokensMetadata,
+    lpTokensBalances,
+    stakedLpTokensBalances) => {
     const rawData = {};
 
-    lpTokensUnderlying.forEach((underlying, index) => {
-      const farmPool = farmsConfig[index];
-      const stakedBalanceInPoolRaw = userStakedBalances[index];
-      const balanceInPoolRaw = userLpTokenBalances[index];
+    lpTokensMetadata.forEach((underlying, index) => {
+      const farmPoolIndex = farmsConfig.findIndex(
+        (f) => getAddress(f.lpAddresses) === getAddress(underlying.lpAddresses),
+      );
+
+      const stakedBalanceInPoolRaw = farmPoolIndex > -1 ? stakedLpTokensBalances[farmPoolIndex] : new BigNumber(0);
+      const balanceInPoolRaw = lpTokensBalances[index];
 
       if (stakedBalanceInPoolRaw.gt(0)
           || balanceInPoolRaw.gt(0)) {
-        rawData[farmPool.lpSymbol] = {
-          tokenSymbol: farmPool.tokenSymbol,
-          quoteTokenSymbol: farmPool.quoteTokenSymbol,
-          lpSymbol: farmPool.lpSymbol,
-          tokenAddress: getAddress(farmPool.tokenAddresses),
-          quoteTokenAddress: getAddress(farmPool.quoteTokenAdresses),
+        rawData[underlying.lpSymbol] = {
+          tokenSymbol: underlying.tokenSymbol,
+          quoteTokenSymbol: underlying.quoteTokenSymbol,
+          lpSymbol: underlying.lpSymbol,
+          tokenAddress: getAddress(underlying.tokenAddresses),
+          quoteTokenAddress: getAddress(underlying.quoteTokenAdresses),
           stakedLpTokenBalance: getFullDisplayBalance(stakedBalanceInPoolRaw, underlying.lpTokenDecimals),
           lpTokenBalances: getFullDisplayBalance(balanceInPoolRaw, underlying.lpTokenDecimals),
           totalLpTokenBalance:
@@ -31,23 +35,23 @@ export default {
 
         // If LP token and the token staked is the same, it means it is not LP
         // being staked, but the token itself inside pool
-        if (getAddress(farmPool.tokenAddresses) === getAddress(farmPool.lpAddresses)) {
-          rawData[farmPool.lpSymbol]
+        if (getAddress(underlying.tokenAddresses) === getAddress(underlying.lpAddresses)) {
+          rawData[underlying.lpSymbol]
             .totalUnderlyingTokenBalance = getFullDisplayBalance(balanceInPoolRaw.plus(stakedBalanceInPoolRaw),
               underlying.lpTokenDecimals);
           return;
         }
 
-        rawData[farmPool.lpSymbol].totalUnderlyingTokenBalance = getLiquidityValue(
+        rawData[underlying.lpSymbol].totalUnderlyingTokenBalance = getLiquidityValue(
           underlying.underlyingTokenSupply,
           underlying.lpTotalSupply,
-          rawData[farmPool.lpSymbol].totalLpTokenBalance,
+          rawData[underlying.lpSymbol].totalLpTokenBalance,
         );
 
-        rawData[farmPool.lpSymbol].totalUnderlyingQuoteTokenBalance = getLiquidityValue(
+        rawData[underlying.lpSymbol].totalUnderlyingQuoteTokenBalance = getLiquidityValue(
           underlying.underlyingQuoteTokenSupply,
           underlying.lpTotalSupply,
-          rawData[farmPool.lpSymbol].totalLpTokenBalance,
+          rawData[underlying.lpSymbol].totalLpTokenBalance,
         );
       }
     });

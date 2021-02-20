@@ -19,5 +19,8 @@ export default {
   },
   addresses: {
     MULTI_CALL_ADDRESS: $.MULTI_CALL_ADDRESS
+  },
+  external: {
+    PANCAKE_SWAP_TOKEN_ENDPOINT: $.PANCAKE_SWAP_TOKEN_ENDPOINT
   }
 };

@@ -4,12 +4,12 @@ import swapFetcher from '../shared/swapFetcher';
 import { getMasterChefAddress } from '../shared/helpers';
 
 export default {
-  fetchLpTokenBalances: async (account) => swapFetcher.fetchLpTokenBalances(farmsConfig, account),
+  fetchFarmLpTokenBalances: async (account) => swapFetcher.fetchLpTokenBalances(farmsConfig, account),
 
-  fetchFarmUserStakedBalances: async (account) => {
+  fetchFarmStakedLpTokenBalances: async (account) => {
     const masterChefAddress = getMasterChefAddress(addresses);
     return swapFetcher.fetchFarmUserStakedBalances(masterChefAddress, farmsConfig, account);
   },
 
-  fetchPools: async () => swapFetcher.fetchPools(farmsConfig),
+  fetchFarmsLpTokensMetadata: async () => swapFetcher.fetchLpTokenMetadata(farmsConfig),
 };

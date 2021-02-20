@@ -17,7 +17,8 @@ export default {
       autoFarmRawData,
       beefyRawData,
       venusRawData,
-      apeSwapRawData] = await Promise.all([
+      apeSwapRawData,
+    ] = await Promise.all([
       pancakeSwap(address),
       autoFarm(address),
       beefy(address),
@@ -63,16 +64,17 @@ export default {
 };
 
 async function pancakeSwap(address) {
-  const [lpTokensUnderlying,
-    userLpTokenBalances,
-    userStakedBalances] = await Promise.all([
-    pancakeSwapFetcher.fetchPools(),
-    pancakeSwapFetcher.fetchLpTokenBalances(address),
-    pancakeSwapFetcher.fetchFarmUserStakedBalances(address)]);
+  const lpTokens = await pancakeSwapFetcher.fetchLpTokens();
 
-  const rawData = pancakeSwapMapper.mapToRawData(lpTokensUnderlying,
-    userLpTokenBalances,
-    userStakedBalances);
+  const [lpTokensMetadata,
+    lpTokensBalances,
+    stakedLpTokensBalances] = await Promise.all([
+    pancakeSwapFetcher.fetchLpTokenMetadata(lpTokens),
+    pancakeSwapFetcher.fetchLpTokenBalances(lpTokens, address),
+    pancakeSwapFetcher.fetchStakedLpTokenBalances(address)]);
+
+  const rawData = pancakeSwapMapper.mapToRawData(lpTokensMetadata,
+    lpTokensBalances, stakedLpTokensBalances);
 
 
   return rawData;
@@ -99,16 +101,16 @@ async function beefy(address) {
 }
 
 async function apeSwap(address) {
-  const [lpTokensUnderlying,
-    userLpTokenBalances,
-    userStakedBalances] = await Promise.all([
-    apeSwapFetcher.fetchPools(),
-    apeSwapFetcher.fetchLpTokenBalances(address),
-    apeSwapFetcher.fetchFarmUserStakedBalances(address)]);
+  const [lpTokensMetadata,
+    lpTokensBalances,
+    stakedLpTokensBalances] = await Promise.all([
+    apeSwapFetcher.fetchFarmsLpTokensMetadata(),
+    apeSwapFetcher.fetchFarmLpTokenBalances(address),
+    apeSwapFetcher.fetchFarmStakedLpTokenBalances(address)]);
 
-  const rawData = apeSwapMapper.mapToRawData(lpTokensUnderlying,
-    userLpTokenBalances,
-    userStakedBalances);
+  const rawData = apeSwapMapper.mapToRawData(lpTokensMetadata,
+    lpTokensBalances,
+    stakedLpTokensBalances);
 
 
   return rawData;
